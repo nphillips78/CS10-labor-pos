@@ -5,20 +5,22 @@ import { FormControlLabel, Checkbox, Typography, Card, Grid } from "@material-ui
 
 class Checkout extends Component {
   state = {
-    subscriptionType: '',
+    subscriptionType: "",
     subscriptionAmount: null
-  }
+  };
 
   setSubscriptionType = e => {
-    const { value: subscriptionType } = e.target 
-    const subscriptionAmount = Number(e.target.attributes['price'])
-    console.log(e)
+    const { value: subscriptionType } = e.target;
+    const subscriptionAmount = Number(e.target.attributes["price"]);
 
     this.setState({
       subscriptionType,
       subscriptionAmount
-    })
-  }
+    });
+  };
+
+  getStripeToken = token => {
+    const { subscriptionType } = this.state;
 
   handleSubmit= e => {
     e.preventDefault();
@@ -56,8 +58,8 @@ class Checkout extends Component {
       });
   };
 
-  render () {
-    return(
+  render() {
+    return (
       <div>
       <Card>
        <Typography paragraph>
@@ -82,32 +84,32 @@ class Checkout extends Component {
                  </Typography>
                 </Card> 
 
-      <React.Fragment>
-        <FormControlLabel
-          control={
-            <Checkbox
-              price={999}
-              name="subscription"
-              onClick={this.setSubscriptionType}
-              value="yearly"
-              type="radio"
-              color="secondary"
-            />
-          }
-           label="Yearly Subscription - $9.99"
+        <React.Fragment>
+          <FormControlLabel
+            control={
+              <Checkbox
+                price={999}
+                name="subscription"
+                onClick={this.setSubscriptionType}
+                value="yearly"
+                type="radio"
+                color="secondary"
+              />
+            }
+            label="Yearly Subscription - $9.99"
           />
-        <FormControlLabel
-          control={
-          <Checkbox
-            price={99}
-            name="subscription"
-            onClick={this.setSubscriptionType}
-            value="monthly"
-            type="radio"
-            color="secondary"
-            />
-          }
-          label="Monthly Subscription - 99¢"
+          <FormControlLabel
+            control={
+              <Checkbox
+                price={99}
+                name="subscription"
+                onClick={this.setSubscriptionType}
+                value="monthly"
+                type="radio"
+                color="secondary"
+              />
+            }
+            label="Monthly Subscription - 99¢"
           />
          
         <StripeCheckout
@@ -121,9 +123,9 @@ class Checkout extends Component {
           zipCode="true"
           billingAddress="true"
           />
-          </React.Fragment>
-     </div>
-    )
+        </React.Fragment>
+      </div>
+    );
   }
 }
 
