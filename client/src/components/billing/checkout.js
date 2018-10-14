@@ -1,39 +1,7 @@
 import React, { Component } from 'react';
-import gql from "graphql-tag";
-import { Query, Mutation } from "react-apollo";
-import { CREATE_STRIPE_CHARGE } from "../../mutations.js";
 import StripeCheckout from "react-stripe-checkout";
-import axios from "axios";
 import { FormControlLabel, Checkbox, Typography, Card, Grid } from "@material-ui/core";
-import { styles } from "../material-ui/styles.js";
-import { AUTH_TOKEN } from "../../constants";
 
-
-
-/*const mutation = gql`
-   mutation CreateStripeCharge($input: _CreateStripeChargeInput!) {
-  createStripeCharge(input: $input) {
-    charge {
-      id
-      amount
-      captured
-      created
-      currency
-      description
-      status
-    }
-  }
-}
-`
-
-const query = gql`
-{
-  currentUser {
-    id
-  }
-}
-`
-*/
 
 class Checkout extends Component {
   state = {
