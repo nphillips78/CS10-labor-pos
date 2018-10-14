@@ -20,42 +20,49 @@ class Checkout extends Component {
   };
 
   getStripeToken = token => {
-    const { subscriptionType } = this.state;
+    let apiURI = "http://localhost:8000/graphql/";
 
-  handleSubmit= e => {
-    e.preventDefault();
-    this.setState({ card_errors: "", resp_message: "" });
-    /*
-    Within the context of Elements, this call to createToken knows which
-    Element to tokenize, since there's only one in this group.
-    */
-    return this.props.stripe
-      .createToken({ type: "card", name: " " })
-      .then(result => {
-        if (result.error) {
-          console.log("THERE IS AN ERROR IN YOUR FORM", result.error);
-          return this.setState({ card_errors: result.error.message });
-        } else {
-          console.log(
-            "Received Stripe token ---> SENDING TO SERVER: ",
-            result.token
-          );
-          let formData = new FormData();
-          formData.append("description", "Premium");
-          formData.append("currency", "usd");
-          formData.append("amount", 9999);
-          formData.append("source", result.token.id);
-          return fetch("https://bestpos.netlify.com/createcharge/", {
-            method: "POST",
-            headers: {
-              accept: "application/graphql"
-            },
-            body: formData
-          })
-            .then(resp => resp.json())
-            .then(json => this.setState({ resp_message: json.message }));
+    const request = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/graphql"
+      },
+      url: apiURI,
+      data: { token, jwt: localStorage.getItem("token") },
+      body: JSON.stringify({ query: "{ token: { id } }" })
+    };
+
+    axios({
+      url: process.env.REACT_APP_ENDPOINT,
+      method: "post",
+      headers: {
+        Authorization: "JWT " + localStorage.getItem(AUTH_TOKEN),
+        "Content-Type": "application/json"
+      },
+      data: JSON.stringify({
+        operationName: null,
+        query: `mutation updateUser($id: ID, $subscription: String) {
+            updateUser(id: $id, subscription: $subscription) {
+              user {
+                id
+                premium
+            }
+          }
+        }`,
+        variables: {
+          id: localStorage.getItem("USER_ID"),
+          subscription: this.state.subscriptionType
         }
-      });
+      })
+    })
+      .then(res => {
+        console.log(res.data.data.updateUser.user.premium);
+        localStorage.setItem(
+          "USER_PREMIUM",
+          res.data.data.updateUser.user.premium
+        );
+      })
+      .catch(err => console.log(err));
   };
 
   render() {
@@ -91,7 +98,7 @@ class Checkout extends Component {
                 price={999}
                 name="subscription"
                 onClick={this.setSubscriptionType}
-                value="yearly"
+                value="year"
                 type="radio"
                 color="secondary"
               />
@@ -104,7 +111,7 @@ class Checkout extends Component {
                 price={99}
                 name="subscription"
                 onClick={this.setSubscriptionType}
-                value="monthly"
+                value="month"
                 type="radio"
                 color="secondary"
               />
